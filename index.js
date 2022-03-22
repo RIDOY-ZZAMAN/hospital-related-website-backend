@@ -18,7 +18,9 @@ async function run() {
         const servicesCollection = database.collection("services");
         const doctorsCollection = database.collection("doctors");
         const reviewsCollection = database.collection("reviews");
-        const usersCollection = database.collection("users")
+        const usersCollection = database.collection("users");
+        const pendingReviewsCollection = database.collection("pendingReviews");
+
         console.log("Database connected");
 
         //GET API
@@ -114,6 +116,31 @@ async function run() {
             const review = req.body;
             const result = await reviewsCollection.insertOne(review);
             res.json(result)
+
+        })
+
+        //POST METHOD FOR CREATING REVIEW
+        app.post('/pendingreviews', async (req, res) => {
+            const review = req.body;
+            const result = await pendingReviewsCollection.insertOne(review);
+            res.json(result)
+
+        })
+        //GETTING PENDING REVIEWS
+        app.get("/pendingreviews", async (req, res) => {
+            const cursor = pendingReviewsCollection.find({});
+            const result = await cursor.toArray(cursor);
+            res.send(result)
+
+        })
+
+        //DELETE A PENDING REVIEW
+        app.delete('/pendingreviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await pendingReviewsCollection.deleteOne(query);
+            res.send(result);
+
 
         })
 
